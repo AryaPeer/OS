@@ -1,0 +1,22 @@
+How a Computer Starts: 
+1. BIOS is copied from a ROM chip to RAM
+2. BIOS starts executing code
+    - Initializes hardware
+    - runs some tests (POST = power on self-test)
+3. BIOS searches for an operating system to starts
+4. BIOS loads and starts the operating system
+5. Operating system runs
+
+How the BIOS Finds an OS:
+Legacy Booting:
+-Bios loads first sector of each bootable device into memory
+-bios checks for a signature
+-once found starts executing code
+
+EFI:
+-Bios looks into special EFI partitions
+-OS must be compiled as an EFI program
+
+DIRECTIVE: - CLUE TO ASSEMBLER ON HOW TO COMPILE 
+
+INSTRUCTION: TRANSLATED TO MACHINE CODE AND EXECUTED BY CPU
