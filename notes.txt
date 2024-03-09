@@ -2,16 +2,16 @@ How a Computer Starts:
 1. BIOS is copied from a ROM chip to RAM
 2. BIOS starts executing code
     - Initializes hardware
-    - runs some tests (POST = power on self-test)
+    - Runs some tests (POST = power on self-test)
 3. BIOS searches for an operating system to starts
 4. BIOS loads and starts the operating system
 5. Operating system runs
 
 How the BIOS Finds an OS:
 Legacy Booting:
--Bios loads first sector of each bootable device into memory
--bios checks for a signature
--once found starts executing code
+- Bios loads first sector of each bootable device into memory
+- Bios checks for a 0XAA55 signature
+- Once found starts executing code
 
 EFI:
 -Bios looks into special EFI partitions
@@ -20,3 +20,43 @@ EFI:
 DIRECTIVE: - CLUE TO ASSEMBLER ON HOW TO COMPILE 
 
 INSTRUCTION: TRANSLATED TO MACHINE CODE AND EXECUTED BY CPU
+
+bits - DIRECTIVE
+
+x86 CPU Registers:
+- General Purpose Registers:
+    - Index Registers - Saving Indices and Pointers
+
+-Status Registers - keeps track of which memory location the current instruction is instruction
+
+-Segment Registers - Keeps track of currently active memory segments.
+    - Has a flags register that contains some special flags which are set by various instructions
+
+Memory Segmentation: 0x1234:0x5678 segment:offset
+
+real address = segment * 16 + offset
+
+Registers to specify currently active segments:
+
+CS - currently running code segment
+DS - Data segment
+SS - Stack Segment
+ES FS GS - EXTRA (DATA) SEGMENTS
+
+Reference a Memory location
+Segment:[base + index * scale + displacement]
+
+base (16 bits BP BX) (32/64 general purpose register)
+Index: (16 SI/DI) (32/64 bits any general purpose register)
+scale: (32/64 bits only) 1, 2, 4, or 8
+displacement: a (signed) constant value
+
+var: dw 100
+
+    mov ax, var; copy offset to ax
+    mov ax, [var];  copy memory contents
+
+array: dw 100, 200, 300
+    mov bx, array; copy offset to ax
+    mov si, 2*2; array[2]; words are 2 bytes wide
+    mov ax, [bx + si]; copy memory contents
