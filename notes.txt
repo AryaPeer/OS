@@ -60,3 +60,14 @@ array: dw 100, 200, 300
     mov bx, array; copy offset to ax
     mov si, 2*2; array[2]; words are 2 bytes wide
     mov ax, [bx + si]; copy memory contents
+
+Bootloader + Kernel
+
+Bootloader : loads basic components into memory
+            Puts system into expected state
+            Collects information about system
+        
+Bootloader swaps to 32 bit protected mode and gets important info.
+
+Floppy Disks - Ease of Use, universal support, FAT12 - Simplest file systems
+
