@@ -74,12 +74,31 @@ main:
     mov ss, ax
     mov sp, 0x7C00 ;stack decrements downward 1000 -> 998 -> 996
 
-    mov si, test_output
+    mov [ebr_drive_number], dl
+
+    mov ax, 1
+    mov cl, 1               
+    mov bx, 0x7E00           
+    call disk_read
+
+    mov si, msg_hello
     call puts
 
+    cli
     hlt
+
+floppy_error:
+    mov si, msg_read_failed
+    call puts
+    jmp wait_key_and_reboot
+
+wait_key_and_reboot:
+    mov ah, 0
+    int 16h
+    jmp 0FFFFh:0
 .halt:
-    jmp .halt
+    cli
+    hlt
 ;end 
 
 lba_to_chs:
@@ -107,16 +126,24 @@ lba_to_chs:
     ret
 
 disk_read:
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+
     push cx
     call lba_to_chs
     pop ax
 
     mov ah, 02h
     mov di, 3
+
 .retry:
     pusha
     stc
     int 13h
+    jnc .done 
 
     popa
     call disk_reset
@@ -129,6 +156,22 @@ disk_read:
     jmp floppy_error
 .done:
     popa
+
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax      
+    ret
+
+disk_reset:
+    pusha
+    mov ah, 0 
+    stc
+    int 13h
+    jc floppy_error
+    popa
+    ret
 
 msg_hello:              db 'Hello world!', ENDL, 0
 msg_read_failed:        db 'Read from disk failed!', ENDL, 0
