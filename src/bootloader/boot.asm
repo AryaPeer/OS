@@ -28,7 +28,7 @@ ebr_drive_number:           db 0
                             db 0              
 ebr_signature:              db 29h
 ebr_volume_id:              db 12h, 34h, 56h, 78h  
-ebr_volume_label:           db 'NANOBYTE OS'        
+ebr_volume_label:           db 'ARYABYTE OS'        
 ebr_system_id:              db 'FAT12   '         
 
 ;
@@ -82,7 +82,56 @@ main:
     jmp .halt
 ;end 
 
-test_output: db 'TEST', ENDL, 0
+lba_to_chs:
+
+    push ax
+    push dx
+
+    xor dx, dx
+    div word [bdb_sectors_per_track]
+
+    inc dx 
+    mov cx, dx
+
+    xor dx, dx
+    div word [bdb_heads]
+
+    mov dh, dl
+    mov ch, al
+    shl ah, 6
+    or cl, ah
+
+    pop ax
+    mov dl, al
+    pop ax
+    ret
+
+disk_read:
+    push cx
+    call lba_to_chs
+    pop ax
+
+    mov ah, 02h
+    mov di, 3
+.retry:
+    pusha
+    stc
+    int 13h
+
+    popa
+    call disk_reset
+
+    dec di
+    test di, di
+    jnz .retry
+
+.fail:
+    jmp floppy_error
+.done:
+    popa
+
+msg_hello:              db 'Hello world!', ENDL, 0
+msg_read_failed:        db 'Read from disk failed!', ENDL, 0
 
 times 510-($-$$) db 0
 dw 0AA55h
